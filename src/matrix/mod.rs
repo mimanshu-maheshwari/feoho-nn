@@ -61,7 +61,34 @@ impl Matrix {
 
 impl Display for Matrix {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        Ok(())
+        writeln!(
+            f,
+            "\n size: {}, row: {}, columns: {}",
+            self.rows * self.cols,
+            self.rows,
+            self.cols
+        )?;
+        for r in 0..self.rows {
+            if r == 0 {
+                write!(f, " ⌈")?;
+            } else if r == self.rows - 1 {
+                write!(f, " ⌊")?;
+            } else {
+                write!(f, " ∣")?;
+            }
+            for c in 0..self.cols {
+                write!(f, " {}", self.data[(r * self.cols) + c])?;
+            }
+            if r == 0 {
+                write!(f, " ⌉")?;
+            } else if r == self.rows - 1 {
+                write!(f, " ⌋")?;
+            } else {
+                write!(f, " ∣")?;
+            }
+            writeln!(f)?;
+        }
+        writeln!(f, "")
     }
 }
 
