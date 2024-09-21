@@ -1,0 +1,25 @@
+[package]
+name = "feoho-nn"
+version = "0.1.0"
+edition = "2021"
+authors = ["Mimanshu Maheshwari <maheshwarimimanshu@gmail.com"]
+default-run = "nn"
+
+
+[lib]
+path = "src/lib.rs" 
+
+[[bin]]
+path = "src/main.rs" 
+name = "nn"
+
+[dependencies]
+rand = { version = "0.8.5"}
+
+
+[dev-dependencies]
+
+[profile.release]
+strip = true  # Automatically strip symbols from the binary.
+opt-level = "z"  # Optimize for size.
+
