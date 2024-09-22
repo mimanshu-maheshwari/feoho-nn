@@ -1,6 +1,8 @@
-use std::{fmt::Display, ops::Mul};
+use std::{fmt::{Debug, Display}, ops::{Add, AddAssign, Mul, Range}};
 
-use crate::NNET;
+use rand::Rng;
+
+use crate::{ActivationFunction, NNET};
 
 #[derive(Debug)]
 pub struct Matrix {
@@ -32,33 +34,47 @@ impl Matrix {
         Self { rows, cols, data}
     }
 
-    fn get_row_count(&self) -> usize  {
+    pub fn random_range(&mut self, range: Range<NNET>) {
+        let mut rng = rand::thread_rng();
+        for el in &mut self.data {
+            *el = rng.gen_range(range.clone());
+        }
+    }
+
+    pub fn randomize(&mut self) {
+        let mut rng = rand::thread_rng();
+        for el in &mut self.data {
+            *el = rng.gen_range(0.0..1.0);
+        }
+    }
+
+    pub fn get_row_count(&self) -> usize  {
         self.rows
     }
 
-    fn get_col_count(&self) -> usize  {
+    pub fn get_col_count(&self) -> usize  {
         self.cols
     }
 
-    fn get_ref(&self, row: usize, col: usize) -> &NNET {
+    pub fn get_ref(&self, row: usize, col: usize) -> &NNET {
         assert!(row < self.rows, "ERROR: Given row {} is greater than or equal to number of rows available, i.e. {}", row, self.rows);
         assert!(col < self.cols, "ERROR: Given col {} is greater than or equal to number of cols available, i.e. {}", col, self.cols);
         &self.data[row * self.cols + col]
     }
 
-    fn get_ref_mut(&mut self, row: usize, col: usize) -> &mut NNET {
+    pub fn get_ref_mut(&mut self, row: usize, col: usize) -> &mut NNET {
         assert!(row < self.rows, "ERROR: Given row {} is greater than or equal to number of rows available, i.e. {}", row, self.rows);
         assert!(col < self.cols, "ERROR: Given col {} is greater than or equal to number of cols available, i.e. {}", col, self.cols);
         &mut self.data[row * self.cols + col]
     }
 
-    fn get_row_ref(&self, row: usize) -> &[NNET] {
+    pub fn get_row_ref(&self, row: usize) -> &[NNET] {
         assert!(row < self.rows, "ERROR: Given row {} is greater than or equal to number of rows available, i.e. {}", row, self.rows);
         let start = row * self.cols;
         &self.data[start..(start + self.cols)]
     }
 
-    fn get_row_ref_mut(&mut self, row: usize) -> &mut [NNET] {
+    pub fn get_row_ref_mut(&mut self, row: usize) -> &mut [NNET] {
         assert!(row < self.rows, "ERROR: Given row {} is greater than or equal to number of rows available, i.e. {}", row, self.rows);
         let start = row * self.cols;
         &mut self.data[start..(start + self.cols)]
@@ -71,6 +87,48 @@ impl Matrix {
     pub fn get_data_ref_mut(&mut self) -> &mut [NNET] {
         &mut self.data
     }
+
+    pub fn activate<Activation: ActivationFunction>(&mut self) {
+        for x in &mut self.data {
+            *x = Activation::activate(*x);
+        }
+    }
+    pub fn fill(&mut self, val: NNET) {
+        for x in &mut self.data {
+            *x = val;
+        }
+    }
+}
+
+impl AddAssign<&Matrix> for Matrix {
+    fn add_assign(&mut self, rhs: &Matrix) {
+        assert_eq!(self.cols, rhs.cols, "ERROR: Can't add matrix as cols size are different.");
+        assert_eq!(self.rows, rhs.rows, "ERROR: Can't add matrix as rows size are different.");
+        for (i, val)  in rhs.data.iter().enumerate() {
+            self.data[i] += val;
+        }
+    }
+}
+
+impl Add<&Matrix> for &Matrix {
+    type Output = Matrix;
+    fn add(self, rhs: &Matrix) -> Self::Output {
+        assert_eq!(self.cols, rhs.cols, "ERROR: Can't add matrix as cols size are different.");
+        assert_eq!(self.rows, rhs.rows, "ERROR: Can't add matrix as rows size are different.");
+        let rows = self.rows; 
+        let cols = self.cols;
+        let mut result = Matrix::zero(rows, cols);
+        //for row in 0..rows {
+        //    for col in 0..cols {
+        //        *result.get_ref_mut(row, col) = self.get_ref(row, col) + rhs.get_ref(row, col);
+        //    }
+        //}
+        for (i, (a, b)) in self.data.iter().zip(rhs.data.iter()).enumerate() {
+            result.data[i] = a + b;
+        }
+        result
+    }
+    
 }
 
 impl Mul<&Matrix> for &Matrix {
@@ -111,7 +169,8 @@ impl Display for Matrix {
                 write!(f, " ∣")?;
             }
             for c in 0..self.cols {
-                write!(f, " {}", self.data[(r * self.cols) + c])?;
+                // write!(f, " {:-18.16}", self.data[(r * self.cols) + c])?;
+                write!(f, " {:-8.6}", self.data[(r * self.cols) + c])?;
             }
             if r == 0 {
                 write!(f, " ⌉")?;

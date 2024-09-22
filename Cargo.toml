@@ -3,6 +3,7 @@ name = "feoho-nn"
 version = "0.1.0"
 edition = "2021"
 authors = ["Mimanshu Maheshwari <maheshwarimimanshu@gmail.com"]
+# default-run = "gates"
 default-run = "nn"
 
 
@@ -12,6 +13,15 @@ path = "src/lib.rs"
 [[bin]]
 path = "src/main.rs" 
 name = "nn"
+
+[[bin]]
+path = "src/bin/gates.rs" 
+name = "gates"
+
+[[bin]]
+path = "src/bin/double.rs" 
+name = "double"
+
 
 [dependencies]
 rand = { version = "0.8.5"}
