@@ -34,18 +34,20 @@ impl Matrix {
         Self { rows, cols, data}
     }
 
-    pub fn random_range(&mut self, range: Range<NNET>) {
+    pub fn random_range(&mut self, range: Range<NNET>) -> &mut Self {
         let mut rng = rand::thread_rng();
         for el in &mut self.data {
             *el = rng.gen_range(range.clone());
         }
+        self
     }
 
-    pub fn randomize(&mut self) {
+    pub fn randomize(&mut self) -> &mut Self {
         let mut rng = rand::thread_rng();
         for el in &mut self.data {
             *el = rng.gen_range(0.0..1.0);
         }
+        self
     }
 
     pub fn get_row_count(&self) -> usize  {

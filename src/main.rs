@@ -1,12 +1,9 @@
-use feoho_nn::{Matrix, Result, Sigmoid};
+use feoho_nn::{Arch, Result, Sigmoid};
 
 fn main() -> Result<()> {
 
-    let mut a = Matrix::zero(2, 2);
-    a.fill(1.0);
-    let mut b = Matrix::zero(2, 2);
-    b.fill(1.0);
-    a += &b;
-    println!("{a}");
+    let arch = vec![2, 1];
+    let arch: Arch<Sigmoid> = Arch::from(2, &arch);
+    
     Ok(())
 }
