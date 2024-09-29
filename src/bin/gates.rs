@@ -26,7 +26,7 @@ fn main() -> Result<()> {
 
     let mut rng = rand::thread_rng();
 
-    let test_data = Matrix::from(4, 3, &xor_data);
+    let test_data = Matrix::from(4, 3, 3, &xor_data);
     let eps = 1e-2;
     let rate = 1e-1;
 

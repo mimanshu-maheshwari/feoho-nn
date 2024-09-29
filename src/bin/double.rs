@@ -3,7 +3,7 @@ use rand::Rng;
 
 fn main() -> Result<()> {
     let test_data = vec![1.0, 2.0, 2.0, 4.0, 3.0, 6.0, 4.0, 8.0];
-    let test_data = Matrix::from(4, 2, &test_data);
+    let test_data = Matrix::from(4, 2, 3, &test_data);
     let mut rng = rand::thread_rng();
     let mut w = rng.gen::<NNET>();
     let mut b = rng.gen::<NNET>();
