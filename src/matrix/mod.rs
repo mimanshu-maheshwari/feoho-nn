@@ -2,7 +2,7 @@ use std::{fmt::{Debug, Display}, ops::{AddAssign, Range}};
 
 use rand::Rng;
 
-use crate::{ActivationFunction, NNET};
+use crate::{activation, ActivationFunction, NNET};
 
 #[derive(Debug)]
 pub struct Matrix {
@@ -84,7 +84,7 @@ impl Matrix {
         &mut self.data[start..(start + self.cols)]
     }
 
-    pub fn dot(dest: &mut Matrix, a: &Matrix, b: &Matrix){
+    pub fn dot(dest: &mut Self, a: &Matrix, b: &Matrix){
         assert_eq!(dest.rows, a.rows);
         assert_eq!(dest.cols, b.cols);
         assert_eq!(   a.cols, b.rows);

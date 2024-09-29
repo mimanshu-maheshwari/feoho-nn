@@ -1,29 +1,28 @@
 use std::fmt;
 
-use crate::Matrix;
+use crate::{Matrix, NNET};
 
 #[derive(Debug)]
 pub struct Tensor { // <A: ActivationFunction> {
     // activation: std::marker::PhantomData<A>,
-    count: usize, 
-    wl: Vec<Matrix>,
-    bl: Vec<Matrix>,
-    al: Vec<Matrix>,
+    pub (super) count: usize, 
+    pub (super) wl: Vec<Matrix>,
+    pub (super) bl: Vec<Matrix>,
+    pub (super) al: Vec<Matrix>,
 }
 
 impl Tensor { //  <A: ActivationFunction> Tensor<A> {
-    pub fn from(input_count: usize, arch_layers: &[usize]) -> Self {
-        let count = arch_layers.len(); 
+    pub fn from(layers: &[usize]) -> Self {
+        let count = layers.len() - 1; 
         assert_ne!(count, 0, "ERROR: Layer count should not be zero!");
-        assert_ne!(input_count, 0, "ERROR: Input count should not be zero!");
         let mut wl: Vec<Matrix> = Vec::with_capacity(count);
         let mut bl: Vec<Matrix> = Vec::with_capacity(count);
         let mut al: Vec<Matrix> = Vec::with_capacity(count + 1);
-        al.push(Matrix::zero(1, input_count));
-        for i in 0..count {
-            al.push(Matrix::zero(1, arch_layers[i]));
-            bl.push(Matrix::zero(1, arch_layers[i]));
-            wl.push(Matrix::zero(al[i].get_col_count(), arch_layers[i]));
+        al.push(Matrix::zero(1, layers[0]));
+        for i in 1..=count {
+            al.push(Matrix::zero(1, layers[i]));
+            bl.push(Matrix::zero(1, layers[i]));
+            wl.push(Matrix::zero(al[i - 1].get_col_count(), layers[i]));
         }
 
         Self {
@@ -31,6 +30,18 @@ impl Tensor { //  <A: ActivationFunction> Tensor<A> {
         }
     }
 
+    pub fn fill(&mut self, val: NNET) -> &mut Self {
+        for w in &mut self.wl {
+            w.fill(val);
+        }
+        for b in &mut self.bl {
+            b.fill(val);
+        }
+        for a in &mut self.al {
+            a.fill(val);
+        }
+        self
+    }
     pub fn randomize(&mut self) -> &mut Self {
         for w in &mut self.wl {
             w.randomize();
@@ -44,9 +55,26 @@ impl Tensor { //  <A: ActivationFunction> Tensor<A> {
         self
     }
 
-    pub fn cost(&mut self, input: &Matrix, output: &Matrix){}
-    pub fn finite_diff(model: &mut Tensor, gradient: &mut Tensor) { }
-    pub fn learn(model: &mut Tensor, gradient: &mut Tensor) { }
+    pub fn get_ref_bl_mut(&mut self, index: usize) -> &mut Matrix {
+        &mut self.bl[index]
+    }
+    pub fn get_ref_al_mut(&mut self, index: usize) -> &mut Matrix {
+        &mut self.al[index]
+    }
+    pub fn get_ref_wl_mut(&mut self, index: usize) -> &mut Matrix {
+        &mut self.wl[index]
+    }
+
+    pub fn get_ref_bl(&self, index: usize) -> &Matrix {
+        &self.bl[index]
+    }
+    pub fn get_ref_al(&self, index: usize) -> &Matrix {
+        &self.al[index]
+    }
+    pub fn get_ref_wl(&self, index: usize) -> &Matrix {
+        &self.wl[index]
+    }
+
 }
 
 impl fmt::Display for Tensor {
