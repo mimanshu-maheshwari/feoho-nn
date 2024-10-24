@@ -1,19 +1,22 @@
-use std::fmt;
+use std::{fmt, ops::Range};
 
 use crate::{Matrix, NNET};
 
 #[derive(Debug)]
-pub struct Tensor { // <A: ActivationFunction> {
+pub struct Tensor {
+    // <A: ActivationFunction> {
     // activation: std::marker::PhantomData<A>,
-    pub (super) count: usize, 
-    pub (super) wl: Vec<Matrix>,
-    pub (super) bl: Vec<Matrix>,
-    pub (super) al: Vec<Matrix>,
+    pub(super) count: usize,
+    pub(super) wl: Vec<Matrix>,
+    pub(super) bl: Vec<Matrix>,
+    pub(super) al: Vec<Matrix>,
 }
 
-impl Tensor { //  <A: ActivationFunction> Tensor<A> {
+impl Tensor {
+    //  <A: ActivationFunction> Tensor<A> {
+
     pub fn from(layers: &[usize]) -> Self {
-        let count = layers.len() - 1; 
+        let count = layers.len() - 1;
         assert_ne!(count, 0, "ERROR: Layer count should not be zero!");
         let mut wl: Vec<Matrix> = Vec::with_capacity(count);
         let mut bl: Vec<Matrix> = Vec::with_capacity(count);
@@ -26,7 +29,10 @@ impl Tensor { //  <A: ActivationFunction> Tensor<A> {
         }
 
         Self {
-            count, wl, bl, al , // activation: std::marker::PhantomData,
+            count,
+            wl,
+            bl,
+            al, // activation: std::marker::PhantomData,
         }
     }
 
@@ -42,6 +48,20 @@ impl Tensor { //  <A: ActivationFunction> Tensor<A> {
         }
         self
     }
+
+    pub fn randomize_range(&mut self, range: Range<NNET>) -> &mut Self {
+        for w in &mut self.wl {
+            w.random_range(range.clone());
+        }
+        for b in &mut self.bl {
+            b.random_range(range.clone());
+        }
+        for a in &mut self.al {
+            a.random_range(range.clone());
+        }
+        self
+    }
+
     pub fn randomize(&mut self) -> &mut Self {
         for w in &mut self.wl {
             w.randomize();
@@ -58,9 +78,11 @@ impl Tensor { //  <A: ActivationFunction> Tensor<A> {
     pub fn get_ref_bl_mut(&mut self, index: usize) -> &mut Matrix {
         &mut self.bl[index]
     }
+
     pub fn get_ref_al_mut(&mut self, index: usize) -> &mut Matrix {
         &mut self.al[index]
     }
+
     pub fn get_ref_wl_mut(&mut self, index: usize) -> &mut Matrix {
         &mut self.wl[index]
     }
@@ -68,11 +90,29 @@ impl Tensor { //  <A: ActivationFunction> Tensor<A> {
     pub fn get_ref_bl(&self, index: usize) -> &Matrix {
         &self.bl[index]
     }
+
     pub fn get_ref_al(&self, index: usize) -> &Matrix {
         &self.al[index]
     }
+
     pub fn get_ref_wl(&self, index: usize) -> &Matrix {
         &self.wl[index]
+    }
+
+    pub fn get_input_mut(&mut self) -> &mut Matrix {
+        self.al.first_mut().unwrap()
+    }
+
+    pub fn get_output_mut(&mut self) -> &mut Matrix {
+        self.bl.last_mut().unwrap()
+    }
+
+    pub fn get_input(&self) -> &Matrix {
+        self.al.first().unwrap()
+    }
+
+    pub fn get_output(&self) -> &Matrix {
+        self.bl.last().unwrap()
     }
 
 }

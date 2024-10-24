@@ -1,28 +1,12 @@
-use feoho_nn::{Matrix, Result, Sigmoid, NNET, ActivationFunction};
+use feoho_nn::{ActivationFunction, Matrix, Result, Sigmoid, NNET};
 use rand::Rng;
 
 fn main() -> Result<()> {
+    let xor_data = vec![0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0];
 
-    let xor_data = vec![
-        0.0, 0.0, 0.0,
-        1.0, 0.0, 1.0,
-        0.0, 1.0, 1.0,
-        1.0, 1.0, 0.0,
-    ];
+    let _and_data = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0];
 
-    let _and_data = vec![
-        0.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        0.0, 1.0, 0.0,
-        1.0, 1.0, 1.0,
-    ];
-
-    let _or_data = vec![
-        0.0, 0.0, 0.0,
-        1.0, 0.0, 1.0,
-        0.0, 1.0, 1.0,
-        1.0, 1.0, 1.0,
-    ];
+    let _or_data = vec![0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0];
 
     let mut rng = rand::thread_rng();
 
@@ -53,7 +37,12 @@ fn print_tests(w1: NNET, w2: NNET, b: NNET) {
         for y in 0..2 {
             let x = x as NNET;
             let y = y as NNET;
-            println!("{} op {} = {}", x, y, Sigmoid::activate(x * w1 + y * w2 + b));
+            println!(
+                "{} op {} = {}",
+                x,
+                y,
+                Sigmoid::activate(x * w1 + y * w2 + b)
+            );
         }
     }
 }
@@ -78,13 +67,11 @@ fn cost(test_data: &Matrix, w1: NNET, w2: NNET, b: NNET) -> NNET {
 /// and return gradiant
 /// we will calculate the original cost
 /// copy the weight and bias value so as we are working with float.
-/// then we will add epsilon 
-/// calculate finite difference and move this difference into gradiant 
+/// then we will add epsilon
+/// calculate finite difference and move this difference into gradiant
 /// and copy back the original value of weight
-fn _finite_diff() {
-
-}
-/// will take model, gradient and rate as input and then 
-/// subtract the gradient after multipling rate 
+fn _finite_diff() {}
+/// will take model, gradient and rate as input and then
+/// subtract the gradient after multipling rate
 /// return the model
 fn _learn() {}

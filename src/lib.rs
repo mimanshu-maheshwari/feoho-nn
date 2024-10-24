@@ -1,11 +1,11 @@
 mod activation;
-mod matrix;
 mod arch;
-mod utils;
+mod matrix;
 mod tensor;
+mod utils;
 
-pub use matrix::Matrix;
-pub use arch::Arch;
-pub use tensor::Tensor;
-pub use utils::{NNET, Result};
 pub use activation::*;
+pub use arch::Arch;
+pub use matrix::Matrix;
+pub use tensor::Tensor;
+pub use utils::{Result, NNET};

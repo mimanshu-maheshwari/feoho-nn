@@ -17,7 +17,6 @@ impl ActivationFunction for Sigmoid {
     }
 }
 
-
 /// ReLU
 pub struct ReLU;
 impl ActivationFunction for ReLU {
@@ -25,7 +24,11 @@ impl ActivationFunction for ReLU {
         x.max(0.0)
     }
     fn derivative(x: NNET) -> NNET {
-        if x > 0.0 { 1.0 } else { 0.0 }
+        if x > 0.0 {
+            1.0
+        } else {
+            0.0
+        }
     }
 }
 
@@ -43,10 +46,18 @@ impl ActivationFunction for Tanh {
 pub struct LeakyReLU;
 impl ActivationFunction for LeakyReLU {
     fn activate(x: NNET) -> NNET {
-        if x > 0.0 { x } else { 0.01 * x }
+        if x > 0.0 {
+            x
+        } else {
+            0.01 * x
+        }
     }
     fn derivative(x: NNET) -> NNET {
-        if x > 0.0 { 1.0 } else { 0.01 }
+        if x > 0.0 {
+            1.0
+        } else {
+            0.01
+        }
     }
 }
 
@@ -65,7 +76,7 @@ impl ActivationFunction for Softplus {
 pub struct Swish;
 impl ActivationFunction for Swish {
     fn activate(x: NNET) -> NNET {
-        x / (1.0 + (-x).exp())  // x * sigmoid(x)
+        x / (1.0 + (-x).exp()) // x * sigmoid(x)
     }
     fn derivative(x: NNET) -> NNET {
         let sigmoid_x = 1.0 / (1.0 + (-x).exp());
