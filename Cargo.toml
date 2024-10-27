@@ -22,6 +22,8 @@ name = "gates"
 path = "src/bin/double.rs" 
 name = "double"
 
+[[test]]
+name = "public"
 
 [dependencies]
 rand = { version = "0.8.5"}

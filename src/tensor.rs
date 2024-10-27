@@ -4,16 +4,26 @@ use crate::{Matrix, NNET};
 
 #[derive(Debug)]
 pub struct Tensor {
-    // <A: ActivationFunction> {
-    // activation: std::marker::PhantomData<A>,
+
+    /// The number of Matrices present in each layer.
+    /// Activation layer has count + 1 Matrices.
     pub(super) count: usize,
+
+    /// ## Weight Layers: 
     pub(super) wl: Vec<Matrix>,
+
+    /// ## Bias layers: 
     pub(super) bl: Vec<Matrix>,
+
+    /// ## Activation layers:
+    /// They are one more that the `count` variable.
+    /// The first layer in al is the input
+    /// Last layer is output
     pub(super) al: Vec<Matrix>,
+
 }
 
 impl Tensor {
-    //  <A: ActivationFunction> Tensor<A> {
 
     pub fn from(layers: &[usize]) -> Self {
         let count = layers.len() - 1;
@@ -104,7 +114,7 @@ impl Tensor {
     }
 
     pub fn get_output_mut(&mut self) -> &mut Matrix {
-        self.bl.last_mut().unwrap()
+        self.al.last_mut().unwrap()
     }
 
     pub fn get_input(&self) -> &Matrix {
@@ -112,7 +122,7 @@ impl Tensor {
     }
 
     pub fn get_output(&self) -> &Matrix {
-        self.bl.last().unwrap()
+        self.al.last().unwrap()
     }
 
 }
@@ -120,9 +130,10 @@ impl Tensor {
 impl fmt::Display for Tensor {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(f, "[")?;
+        let padding = 2;
         for i in 0..self.count {
-            self.wl[i].print(format!("wl{}", i).as_str(), 4);
-            self.bl[i].print(format!("bl{}", i).as_str(), 4);
+            self.wl[i].print(format!("wl{}", i).as_str(), padding);
+            self.bl[i].print(format!("bl{}", i).as_str(), padding);
         }
         writeln!(f, "]")
     }

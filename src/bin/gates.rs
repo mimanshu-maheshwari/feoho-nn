@@ -2,11 +2,11 @@ use feoho_nn::{ActivationFunction, Matrix, Result, Sigmoid, NNET};
 use rand::Rng;
 
 fn main() -> Result<()> {
-    let xor_data = vec![0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0];
+    let xor_data = [0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0];
 
-    let _and_data = vec![0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0];
+    let _and_data = [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0];
 
-    let _or_data = vec![0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0];
+    let _or_data = [0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0];
 
     let mut rng = rand::thread_rng();
 

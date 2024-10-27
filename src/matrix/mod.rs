@@ -234,7 +234,7 @@ impl Matrix {
             }
             println!();
         }
-        println!("");
+        println!();
     }
 }
 
@@ -325,6 +325,6 @@ impl Display for Matrix {
             }
             writeln!(f)?;
         }
-        writeln!(f, "")
+        writeln!(f)
     }
 }

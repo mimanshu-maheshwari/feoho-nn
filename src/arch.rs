@@ -28,7 +28,7 @@ impl<A: ActivationFunction> Arch<A> {
         layers.push(output_cols);
 
         // copy input and output values.
-        let input = Matrix::from(rows, input_cols, input_cols + output_cols, &input_data[..]);
+        let input = Matrix::from(rows, input_cols, input_cols + output_cols, input_data);
         let output = Matrix::from(
             rows,
             output_cols,
@@ -56,13 +56,28 @@ impl<A: ActivationFunction> Arch<A> {
     }
 
     pub fn train(&mut self) {
-        // copy row into model 
+
+        // TODO: change default values and make them variable
         let eps = 1e-1;
-        let rate = 1e-1;
-        println!("cost = {}", self.cost());
-        self.finite_diff(eps);
-        self.learn(rate);
-        println!("cost = {}", self.cost());
+        let rate = 1e-2;
+        let iterations = 200 * 1000;
+
+        println!("Initial cost = {}", self.cost());
+        
+        for _ in 0..iterations {
+            self.finite_diff(eps);
+            self.learn(rate);
+        }
+
+        println!("Final cost   = {}", self.cost());
+    }
+
+    pub fn _check_model(&mut self) {
+        for i in 0..self.input.get_row_count() {
+                self.model.get_input_mut().copy_from_slice(self.input.get_row_ref(i));
+                self.forward();
+                println!("{:?} : {:?}", self.model.get_input().get_data_ref(), self.model.get_output().get_data_ref());
+        }
     }
 
     pub fn forward(&mut self) {
@@ -79,7 +94,7 @@ impl<A: ActivationFunction> Arch<A> {
             next_al_layer.activate::<Sigmoid>();
 
             // move the next layer back to its place
-            default_matrix = mem::replace(&mut self.model.al[i + 1], next_al_layer);
+            default_matrix = mem::replace(self.model.get_ref_al_mut(i + 1), next_al_layer);
         }
     }
 
@@ -90,10 +105,10 @@ impl<A: ActivationFunction> Arch<A> {
             let x = self.input.get_row_ref(i);
             self.model.get_input_mut().copy_from_slice(x);
             self.forward();
-            let q = self.output.get_col_count();
             let y = self.output.get_row_ref(i);
-            for j in 0..q {
-                let d = self.model.get_output().get_ref(0, j) - y[j];
+            for (j, output) in y.iter().enumerate().take(self.output.get_col_count()) {
+            // for j in 0..q {
+                let d = self.model.get_output().get_ref(0, j) - output;
                 c = d * d;
             }
         }
@@ -103,6 +118,7 @@ impl<A: ActivationFunction> Arch<A> {
     fn finite_diff(&mut self, eps: NNET) {
         let mut saved: NNET;
         let c: NNET = self.cost();
+        // for all inputs
         for i in 0..self.model.count {
             // calculate for weights
             for j in 0..self.model.get_ref_wl(i).get_row_count() {
@@ -138,7 +154,6 @@ impl<A: ActivationFunction> Arch<A> {
                 }
             }
         }
-        
     }
 
     fn learn(&mut self, rate: NNET) {
@@ -161,18 +176,18 @@ impl<A: ActivationFunction> Arch<A> {
     }
 
     pub fn print_gradient(&self) {
-        println!("{}", self.gradient);
+        println!("Gradient: {}", self.gradient);
     }
 
     pub fn print_model(&self) {
-        println!("{}", self.model);
+        println!("Model: {}", self.model);
     }
 
-    pub fn print_input(&self) {
+    pub fn print_given_input(&self) {
         println!("Input: {}", self.input);
     }
 
-    pub fn print_output(&self) {
+    pub fn print_given_output(&self) {
         println!("Input: {}", self.output);
     }
 }
