@@ -57,9 +57,12 @@ impl<A: ActivationFunction> Arch<A> {
 
     pub fn train(&mut self) {
         // copy row into model 
-        self.cost();
-        println!("Input: {}", self.model.get_input());
-        println!("Output: {}", self.model.get_output());
+        let eps = 1e-1;
+        let rate = 1e-1;
+        println!("cost = {}", self.cost());
+        self.finite_diff(eps);
+        self.learn(rate);
+        println!("cost = {}", self.cost());
     }
 
     pub fn forward(&mut self) {
@@ -96,17 +99,79 @@ impl<A: ActivationFunction> Arch<A> {
         }
         c / n as NNET
     }
+
     fn finite_diff(&mut self, eps: NNET) {
-        let mut saved;
+        let mut saved: NNET;
+        let c: NNET = self.cost();
+        for i in 0..self.model.count {
+            // calculate for weights
+            for j in 0..self.model.get_ref_wl(i).get_row_count() {
+                for k in 0..self.model.get_ref_wl(i).get_col_count() {
+                    // save the value as float calculation introduces error
+                    saved = *self.model.get_ref_wl(i).get_ref(j, k);
+
+                    // add epsilon value
+                    *self.model.get_ref_wl_mut(i).get_ref_mut(j, k) += eps;
+
+                    // save the calculated values in gradient
+                    *self.gradient.get_ref_wl_mut(i).get_ref_mut(j, k) = (self.cost() - c) / eps; 
+
+                    // return to the saved value.
+                    *self.model.get_ref_wl_mut(i).get_ref_mut(j, k) = saved;
+                }
+            }
+
+            // calculation for biases
+            for j in 0..self.model.get_ref_bl(i).get_row_count() {
+                for k in 0..self.model.get_ref_bl(i).get_col_count() {
+                    // save the value as float calculation introduces error
+                    saved = *self.model.get_ref_bl(i).get_ref(j, k);
+
+                    // add epsilon value
+                    *self.model.get_ref_bl_mut(i).get_ref_mut(j, k) += eps;
+
+                    // save the calculated values in gradient
+                    *self.gradient.get_ref_bl_mut(i).get_ref_mut(j, k) = (self.cost() - c) / eps; 
+
+                    // return to the saved value.
+                    *self.model.get_ref_bl_mut(i).get_ref_mut(j, k) = saved;
+                }
+            }
+        }
         
     }
-    fn _learn(&mut self) {}
+
+    fn learn(&mut self, rate: NNET) {
+        for i in 0..self.model.count {
+
+            // learn for weights
+            for j in 0..self.model.get_ref_wl(i).get_row_count() {
+                for k in 0..self.model.get_ref_wl(i).get_col_count() {
+                    *self.model.get_ref_wl_mut(i).get_ref_mut(j, k) -= rate * self.gradient.get_ref_wl(i).get_ref(j, k);
+                }
+            }
+
+            // learn for biases
+            for j in 0..self.model.get_ref_bl(i).get_row_count() {
+                for k in 0..self.model.get_ref_bl(i).get_col_count() {
+                    *self.model.get_ref_bl_mut(i).get_ref_mut(j, k) -= rate * self.gradient.get_ref_bl(i).get_ref(j, k);
+                }
+            }
+        }
+    }
+
+    pub fn print_gradient(&self) {
+        println!("{}", self.gradient);
+    }
+
     pub fn print_model(&self) {
         println!("{}", self.model);
     }
+
     pub fn print_input(&self) {
         println!("Input: {}", self.input);
     }
+
     pub fn print_output(&self) {
         println!("Input: {}", self.output);
     }
