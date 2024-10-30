@@ -6,7 +6,7 @@ pub mod public {
 
 
         #[test]
-        fn test__zero_success__1() {
+        fn zero_success_1() {
             let rows = 2; 
             let cols = 3; 
             let matrix = Matrix::zero(rows, cols);
@@ -19,7 +19,7 @@ pub mod public {
         }
 
         #[test]
-        fn test__zero_success__2() {
+        fn zero_success_2() {
             let rows = 3; 
             let cols = 2; 
             let matrix = Matrix::zero(rows, cols);
@@ -32,7 +32,7 @@ pub mod public {
         }
 
         #[test]
-        fn test__from_and_get_row_success__1() {
+        fn from_and_get_row_success_1() {
             let data = [
                 2.0, 3.0, 4.0,
                 3.0, 4.0, 5.0,
@@ -73,7 +73,7 @@ pub mod public {
         }
 
         #[test]
-        fn test__from_and_get_row_success__2() {
+        fn from_and_get_row_success_2() {
             let data = [
                 2.0, 3.0, 4.0,
                 3.0, 4.0, 5.0,
@@ -113,7 +113,7 @@ pub mod public {
         }
 
         #[test]
-        fn test__get_ref__1(){
+        fn get_ref_1(){
             let data = [
                 2.0, 3.0, 4.0,
                 3.0, 4.0, 5.0,
@@ -153,15 +153,98 @@ pub mod public {
             }
         }
         #[test]
-        fn test__dot__1(){}
+        fn dot_1(){
+
+            // setup
+            let a_rows = 3;
+            let a_cols = 2; 
+            let b_rows = 2;
+            let b_cols = 3;
+
+            let a = Matrix::from(a_rows, a_cols, a_cols, &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+            let b = Matrix::from(b_rows, b_cols, b_cols, &[1.0, 3.0, 2.0, 5.0, 7.0, 6.0]);
+
+            let expected_output = Matrix::from(a_rows, b_cols, b_cols, &[11.0, 17.0, 14.0, 23.0, 37.0, 30.0, 35.0, 57.0, 46.0]);
+            let mut actual_output = Matrix::zero(a_rows, b_cols);
+            actual_output.randomize();
+
+            // action
+            actual_output.dot(&a, &b);
+
+            // validation
+            assert_eq!(expected_output.get_row_count(), actual_output.get_row_count());
+            assert_eq!(expected_output.get_col_count(), actual_output.get_col_count());
+
+            for (ac, ex) in actual_output.get_data_ref().iter().zip(expected_output.get_data_ref())  {
+                assert_eq!(ac, ex);
+            }
+            
+        }
 
         #[test]
-        fn test__dot__2(){}
+        fn dot_2(){
+
+            // setup
+            let a_rows = 5;
+            let a_cols = 8; 
+            let b_rows = 8;
+            let b_cols = 3;
+
+            let a = Matrix::from(a_rows, a_cols, a_cols, &[
+                1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 0.0,
+                9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 1.0,
+                2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 0.0, 0.0, 
+                9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 1.0,
+            ]);
+            let b = Matrix::from(b_rows, b_cols, b_cols, &[
+                0.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0,
+                2.0, 1.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+                7.0, 8.0, 9.0, 0.0, 0.0, 9.0, 8.0, 7.0
+            ]);
+
+            let expected_output = Matrix::from(a_rows, b_cols, b_cols, &[
+                216.0, 160.0, 161.0, 182.0, 218.0,
+                217.0, 124.0, 112.0, 107.0, 243.0,
+                193.0, 173.0, 105.0, 152.0, 142.0,
+            ]);
+            let mut actual_output = Matrix::zero(a_rows, b_cols);
+            actual_output.randomize();
+
+            // action
+            actual_output.dot(&a, &b);
+
+            // validation
+            assert_eq!(expected_output.get_row_count(), actual_output.get_row_count());
+            assert_eq!(expected_output.get_col_count(), actual_output.get_col_count());
+
+            for (ac, ex) in actual_output.get_data_ref().iter().zip(expected_output.get_data_ref())  {
+                assert_eq!(ac, ex);
+            }
+        }
 
         #[test]
-        fn test__add__1(){}
+        fn add_1(){
 
-        #[test]
-        fn test__add__2(){}
+            // setup
+            let a_rows = 3;
+            let a_cols = 2; 
+
+            let a = Matrix::from(a_rows, a_cols, a_cols, &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
+
+            let expected_output = Matrix::from(a_rows, a_cols, a_cols, &[6.0,6.0,6.0,6.0,6.0,6.0,]);
+            let mut actual_output = Matrix::from(a_rows, a_cols, a_cols, &[5.0, 4.0, 3.0, 2.0, 1.0, 0.0]);
+
+            // action
+            actual_output.add(&a);
+
+            // validation
+            assert_eq!(expected_output.get_row_count(), actual_output.get_row_count());
+            assert_eq!(expected_output.get_col_count(), actual_output.get_col_count());
+
+            for (ac, ex) in actual_output.get_data_ref().iter().zip(expected_output.get_data_ref())  {
+                assert_eq!(ac, ex);
+            }
+        }
+
     }
 }
