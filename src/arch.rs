@@ -1,5 +1,7 @@
+//! for why the feed_forward issue
+//! read subtyping and variance in rust [rust nomicon](<https://doc.rust-lang.org/nomicon/subtyping.html> "Subtyping and Variance")
+
 use crate::{ActivationFunction, Matrix, Sigmoid, Tensor, NNET};
-use std::mem;
 
 pub struct Arch<A: ActivationFunction> {
     activation: std::marker::PhantomData<A>,
@@ -75,27 +77,27 @@ impl<A: ActivationFunction> Arch<A> {
     pub fn _check_model(&mut self) {
         for i in 0..self.input.get_row_count() {
                 self.model.get_input_mut().copy_from_slice(self.input.get_row_ref(i));
-                self.forward();
+                self.feed_forward();
                 println!("{:?} : {:?}", self.model.get_input().get_data_ref(), self.model.get_output().get_data_ref());
         }
     }
 
-    // read subtyping and variance in rust
-    pub fn forward(&mut self) {
+    pub fn feed_forward(&mut self) {
         for i in 0..self.model.count {
             // let mut next_al_layer = self.model.get_ref_al_mut(i+ 1);
             let (left, right) = self.model.al.split_at_mut(i + 1);
-            let current_al_layer = left.get(left.len());
+            let current_al_layer = left.get(left.len() - 1);
             let next_al_layer = right.get_mut(0);
             if current_al_layer.is_some() && next_al_layer.is_some() {
                 let current_al_layer = current_al_layer.unwrap();
                 let next_al_layer = next_al_layer.unwrap();
+
                 let current_wl_layer = &self.model.wl[i];// .get_ref_wl(i);
                 let current_bl_layer = &self.model.bl[i];
+
                 next_al_layer.dot(current_al_layer, current_wl_layer);
                 next_al_layer.add(current_bl_layer);
                 next_al_layer.activate::<Sigmoid>();
-
             }
         }
     }
@@ -124,7 +126,7 @@ impl<A: ActivationFunction> Arch<A> {
         for i in 0..n {
             let x = self.input.get_row_ref(i);
             self.model.get_input_mut().copy_from_slice(x);
-            self.forward();
+            self.feed_forward();
             let y = self.output.get_row_ref(i);
             for (j, output) in y.iter().enumerate().take(self.output.get_col_count()) {
             // for j in 0..q {
@@ -141,36 +143,36 @@ impl<A: ActivationFunction> Arch<A> {
         // for all inputs
         for i in 0..self.model.count {
             // calculate for weights
-            for j in 0..self.model.get_ref_wl(i).get_row_count() {
-                for k in 0..self.model.get_ref_wl(i).get_col_count() {
+            for j in 0..self.model.wl[i].get_row_count() {
+                for k in 0..self.model.wl[i].get_col_count() {
                     // save the value as float calculation introduces error
-                    saved = *self.model.get_ref_wl(i).get_ref(j, k);
+                    saved = *self.model.wl[i].get_ref(j, k);
 
                     // add epsilon value
-                    *self.model.get_ref_wl_mut(i).get_ref_mut(j, k) += eps;
+                    *self.model.wl[i].get_ref_mut(j, k) += eps;
 
                     // save the calculated values in gradient
-                    *self.gradient.get_ref_wl_mut(i).get_ref_mut(j, k) = (self.cost() - c) / eps; 
+                    *self.gradient.wl[i].get_ref_mut(j, k) = (self.cost() - c) / eps; 
 
                     // return to the saved value.
-                    *self.model.get_ref_wl_mut(i).get_ref_mut(j, k) = saved;
+                    *self.model.wl[i].get_ref_mut(j, k) = saved;
                 }
             }
 
             // calculation for biases
-            for j in 0..self.model.get_ref_bl(i).get_row_count() {
-                for k in 0..self.model.get_ref_bl(i).get_col_count() {
+            for j in 0..self.model.bl[i].get_row_count() {
+                for k in 0..self.model.bl[i].get_col_count() {
                     // save the value as float calculation introduces error
-                    saved = *self.model.get_ref_bl(i).get_ref(j, k);
+                    saved = *self.model.bl[i].get_ref(j, k);
 
                     // add epsilon value
-                    *self.model.get_ref_bl_mut(i).get_ref_mut(j, k) += eps;
+                    *self.model.bl[i].get_ref_mut(j, k) += eps;
 
                     // save the calculated values in gradient
-                    *self.gradient.get_ref_bl_mut(i).get_ref_mut(j, k) = (self.cost() - c) / eps; 
+                    *self.gradient.bl[i].get_ref_mut(j, k) = (self.cost() - c) / eps; 
 
                     // return to the saved value.
-                    *self.model.get_ref_bl_mut(i).get_ref_mut(j, k) = saved;
+                    *self.model.bl[i].get_ref_mut(j, k) = saved;
                 }
             }
         }
@@ -180,16 +182,16 @@ impl<A: ActivationFunction> Arch<A> {
         for i in 0..self.model.count {
 
             // learn for weights
-            for j in 0..self.model.get_ref_wl(i).get_row_count() {
-                for k in 0..self.model.get_ref_wl(i).get_col_count() {
-                    *self.model.get_ref_wl_mut(i).get_ref_mut(j, k) -= rate * self.gradient.get_ref_wl(i).get_ref(j, k);
+            for j in 0..self.model.wl[i].get_row_count() {
+                for k in 0..self.model.wl[i].get_col_count() {
+                    *self.model.wl[i].get_ref_mut(j, k) -= rate * self.gradient.wl[i].get_ref(j, k);
                 }
             }
 
             // learn for biases
-            for j in 0..self.model.get_ref_bl(i).get_row_count() {
-                for k in 0..self.model.get_ref_bl(i).get_col_count() {
-                    *self.model.get_ref_bl_mut(i).get_ref_mut(j, k) -= rate * self.gradient.get_ref_bl(i).get_ref(j, k);
+            for j in 0..self.model.bl[i].get_row_count() {
+                for k in 0..self.model.bl[i].get_col_count() {
+                    *self.model.bl[i].get_ref_mut(j, k) -= rate * self.gradient.bl[i].get_ref(j, k);
                 }
             }
         }

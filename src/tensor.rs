@@ -85,29 +85,29 @@ impl Tensor {
         self
     }
 
-    pub fn get_ref_bl_mut(&mut self, index: usize) -> &mut Matrix {
-        &mut self.bl[index]
-    }
+    // pub fn get_ref_bl_mut(&mut self, index: usize) -> &mut Matrix {
+    //     &mut self.bl[index]
+    // }
 
-    pub fn get_ref_al_mut(&mut self, index: usize) -> &mut Matrix {
-        &mut self.al[index]
-    }
+    // pub fn get_ref_al_mut(&mut self, index: usize) -> &mut Matrix {
+    //     &mut self.al[index]
+    // }
 
-    pub fn get_ref_wl_mut(&mut self, index: usize) -> &mut Matrix {
-        &mut self.wl[index]
-    }
+    // pub fn get_ref_wl_mut(&mut self, index: usize) -> &mut Matrix {
+    //     &mut self.wl[index]
+    // }
 
-    pub fn get_ref_bl(&self, index: usize) -> &Matrix {
-        &self.bl[index]
-    }
+    // pub fn get_ref_bl(&self, index: usize) -> &Matrix {
+    //     &self.bl[index]
+    // }
 
-    pub fn get_ref_al(&self, index: usize) -> &Matrix {
-        &self.al[index]
-    }
+    // pub fn get_ref_al(&self, index: usize) -> &Matrix {
+    //     &self.al[index]
+    // }
 
-    pub fn get_ref_wl(&self, index: usize) -> &Matrix {
-        &self.wl[index]
-    }
+    // pub fn get_ref_wl(&self, index: usize) -> &Matrix {
+    //     &self.wl[index]
+    // }
 
     pub fn get_input_mut(&mut self) -> &mut Matrix {
         self.al.first_mut().unwrap()
