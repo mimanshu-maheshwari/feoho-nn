@@ -6,7 +6,7 @@ pub mod public {
 
 
         #[test]
-        fn zero_success_1() {
+        fn zero_1() {
             let rows = 2; 
             let cols = 3; 
             let matrix = Matrix::zero(rows, cols);
@@ -19,7 +19,7 @@ pub mod public {
         }
 
         #[test]
-        fn zero_success_2() {
+        fn zero_2() {
             let rows = 3; 
             let cols = 2; 
             let matrix = Matrix::zero(rows, cols);
@@ -32,7 +32,7 @@ pub mod public {
         }
 
         #[test]
-        fn from_and_get_row_success_1() {
+        fn from_and_get_row_1() {
             let data = [
                 2.0, 3.0, 4.0,
                 3.0, 4.0, 5.0,
@@ -73,7 +73,7 @@ pub mod public {
         }
 
         #[test]
-        fn from_and_get_row_success_2() {
+        fn from_and_get_row_2() {
             let data = [
                 2.0, 3.0, 4.0,
                 3.0, 4.0, 5.0,

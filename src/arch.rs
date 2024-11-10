@@ -13,13 +13,13 @@ pub struct Arch<A: ActivationFunction> {
 
 impl<A: ActivationFunction> Arch<A> {
     pub fn new(
-        input_data: &[NNET],
+        data: &[NNET],
         rows: usize,
         input_cols: usize,
         output_cols: usize,
         hidden_layers: &[usize],
     ) -> Self {
-        assert_ne!(input_data.len(), 0);
+        assert_ne!(data.len(), 0);
         assert_ne!(rows, 0);
         assert_ne!(input_cols, 0);
         assert_ne!(output_cols, 0);
@@ -30,12 +30,12 @@ impl<A: ActivationFunction> Arch<A> {
         layers.push(output_cols);
 
         // copy input and output values.
-        let input = Matrix::from(rows, input_cols, input_cols + output_cols, input_data);
+        let input = Matrix::from(rows, input_cols, input_cols + output_cols, data);
         let output = Matrix::from(
             rows,
             output_cols,
             input_cols + output_cols,
-            &input_data[input_cols..],
+            &data[input_cols..],
         );
 
         // create model
@@ -75,6 +75,7 @@ impl<A: ActivationFunction> Arch<A> {
     }
 
     pub fn _check_model(&mut self) {
+        println!("Checking output");
         for i in 0..self.input.get_row_count() {
                 self.model.get_input_mut().copy_from_slice(self.input.get_row_ref(i));
                 self.feed_forward();
@@ -101,24 +102,6 @@ impl<A: ActivationFunction> Arch<A> {
             }
         }
     }
-
-    // pub fn _forward(&mut self) {
-    //     // create a default matrix to replace the value in matrix array
-    //     let mut default_matrix = Matrix::default();
-    //     for i in 0..self.model.count {
-
-    //         // take the next layer and move default in its place
-    //         let mut next_al_layer = mem::replace(self.model.get_ref_al_mut(i + 1), default_matrix);
-
-    //         // forwarding logic
-    //         next_al_layer.dot(self.model.get_ref_al(i), self.model.get_ref_wl(i));
-    //         next_al_layer.add(self.model.get_ref_bl(i));
-    //         next_al_layer.activate::<Sigmoid>();
-
-    //         // move the next layer back to its place
-    //         default_matrix = mem::replace(self.model.get_ref_al_mut(i + 1), next_al_layer);
-    //     }
-    // }
 
     fn cost(&mut self) -> NNET {
         let mut c = 0.0;
@@ -210,6 +193,6 @@ impl<A: ActivationFunction> Arch<A> {
     }
 
     pub fn print_given_output(&self) {
-        println!("Input: {}", self.output);
+        println!("Output: {}", self.output);
     }
 }
