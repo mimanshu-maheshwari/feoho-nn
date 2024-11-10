@@ -134,7 +134,7 @@ impl Matrix {
         &mut self.data[start..(start + self.cols)]
     }
 
-    pub fn dot(&mut self, a: &Matrix, b: &Matrix) {
+    pub fn dot<'a, 'b>(&'a mut self, a: &'b Matrix, b: &'_ Matrix) {
         assert_eq!(self.rows, a.rows);
         assert_eq!(self.cols, b.cols);
         assert_eq!(a.cols, b.rows);
@@ -162,7 +162,7 @@ impl Matrix {
         }
     }
 
-    pub fn add(&mut self, src: &Matrix) {
+    pub fn add<'a>(&'a mut self, src: &'_ Matrix) {
         assert_eq!(self.rows, src.rows);
         assert_eq!(self.cols, src.cols);
         for (index, ele) in src.data.iter().enumerate() {

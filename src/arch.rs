@@ -80,23 +80,43 @@ impl<A: ActivationFunction> Arch<A> {
         }
     }
 
+    // read subtyping and variance in rust
     pub fn forward(&mut self) {
-        // create a default matrix to replace the value in matrix array
-        let mut default_matrix = Matrix::default();
         for i in 0..self.model.count {
+            // let mut next_al_layer = self.model.get_ref_al_mut(i+ 1);
+            let (left, right) = self.model.al.split_at_mut(i + 1);
+            let current_al_layer = left.get(left.len());
+            let next_al_layer = right.get_mut(0);
+            if current_al_layer.is_some() && next_al_layer.is_some() {
+                let current_al_layer = current_al_layer.unwrap();
+                let next_al_layer = next_al_layer.unwrap();
+                let current_wl_layer = &self.model.wl[i];// .get_ref_wl(i);
+                let current_bl_layer = &self.model.bl[i];
+                next_al_layer.dot(current_al_layer, current_wl_layer);
+                next_al_layer.add(current_bl_layer);
+                next_al_layer.activate::<Sigmoid>();
 
-            // take the next layer and move default in its place
-            let mut next_al_layer = mem::replace(self.model.get_ref_al_mut(i + 1), default_matrix);
-
-            // forwarding logic
-            next_al_layer.dot(self.model.get_ref_al(i), self.model.get_ref_wl(i));
-            next_al_layer.add(self.model.get_ref_bl(i));
-            next_al_layer.activate::<Sigmoid>();
-
-            // move the next layer back to its place
-            default_matrix = mem::replace(self.model.get_ref_al_mut(i + 1), next_al_layer);
+            }
         }
     }
+
+    // pub fn _forward(&mut self) {
+    //     // create a default matrix to replace the value in matrix array
+    //     let mut default_matrix = Matrix::default();
+    //     for i in 0..self.model.count {
+
+    //         // take the next layer and move default in its place
+    //         let mut next_al_layer = mem::replace(self.model.get_ref_al_mut(i + 1), default_matrix);
+
+    //         // forwarding logic
+    //         next_al_layer.dot(self.model.get_ref_al(i), self.model.get_ref_wl(i));
+    //         next_al_layer.add(self.model.get_ref_bl(i));
+    //         next_al_layer.activate::<Sigmoid>();
+
+    //         // move the next layer back to its place
+    //         default_matrix = mem::replace(self.model.get_ref_al_mut(i + 1), next_al_layer);
+    //     }
+    // }
 
     fn cost(&mut self) -> NNET {
         let mut c = 0.0;
