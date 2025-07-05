@@ -6,32 +6,15 @@ authors = ["Mimanshu Maheshwari <maheshwarimimanshu@gmail.com"]
 # default-run = "gates"
 default-run = "nn"
 
-
-[lib]
-path = "src/lib.rs" 
-
 [[bin]]
-path = "src/main.rs" 
+path = "src/main.rs"
 name = "nn"
 
-[[bin]]
-path = "src/bin/gates.rs" 
-name = "gates"
-
-[[bin]]
-path = "src/bin/double.rs" 
-name = "double"
-
-[[test]]
-name = "public"
-
 [dependencies]
-rand = { version = "0.8.5"}
-
+rand = { version = "0.9.1" }
 
 [dev-dependencies]
 
 [profile.release]
-strip = true  # Automatically strip symbols from the binary.
-opt-level = "z"  # Optimize for size.
-
+strip = true    # Automatically strip symbols from the binary.
+opt-level = "z" # Optimize for size.
