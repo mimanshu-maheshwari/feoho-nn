@@ -1,0 +1,29 @@
+\documentclass{article}
+\usepackage{amsmath}
+\begin{document}
+
+
+
+\section{Single Neuron/Perceptron}
+
+\begin{equation}
+  \sigma(\sum_{i=1}^{n} X_{i}W_{i} + b)
+\end{equation}
+
+\section{Multi layer Perceptron}
+\subsection{Notations}
+$W_{jk}^{l}$ is weight from $k$ index in row $l - 1 \rightarrow j$ index in $l$ in layer $l$ \\
+Lets say we have the below matrix
+$$
+\begin{bmatrix}
+  1 & 2 & 3 \\
+  4 & 5 & 6 \\
+  7 & 8 & 9 
+\end{bmatrix}
+$$
+then it is a matrix with $j$ in current layer rows and $k$ in previous layer columns and $W_{jk}$ will be a node to node weight.
+
+$b_{j}^{l}$ is bias for layer $l$ at index $j$ in layer $l$.
+
+
+\end{document}
