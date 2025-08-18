@@ -3,7 +3,6 @@ name = "feoho-nn"
 version = "0.1.0"
 edition = "2021"
 authors = ["Mimanshu Maheshwari <maheshwarimimanshu@gmail.com"]
-# default-run = "gates"
 default-run = "nn"
 
 [[bin]]
@@ -11,10 +10,32 @@ path = "src/main.rs"
 name = "nn"
 
 [dependencies]
-rand = { version = "0.9.1" }
+rand = { version = "0.9.2" }
 
 [dev-dependencies]
 
+[profile.dev]
+opt-level = 0
+debug = true
+strip = "none"
+debug-assertions = true
+overflow-checks = true
+lto = false
+panic = 'unwind'
+incremental = true
+codegen-units = 256
+rpath = false
+
 [profile.release]
-strip = true    # Automatically strip symbols from the binary.
-opt-level = "z" # Optimize for size.
+# Automatically strip symbols from the binary.
+# Possible string values of strip are "none", "debuginfo", and "symbols". The default is "none".
+# You can also configure this option with the boolean values true or false. strip = true is equivalent to strip = "symbols". strip = false is equivalent to strip = "none" and disables strip completely.
+strip = true
+#The valid options are:
+# 0: no optimizations
+# 1: basic optimizations
+# 2: some optimizations
+# 3: all optimizations
+# "s": optimize for binary size
+# "z": optimize for binary size, but also turn off loop vectorization.
+opt-level = 3
