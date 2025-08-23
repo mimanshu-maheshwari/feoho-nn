@@ -1,13 +1,12 @@
 \documentclass{article}
-\usepackage{amsmath}
+\usepackage{amsmath,amsfonts,amsthm,amssymb,mathtools}
+
 \begin{document}
-
-
 
 \section{Single Neuron/Perceptron}
 
 \begin{equation}
-  \sigma(\sum_{i=1}^{n} X_{i}W_{i} + b)
+  \sigma\left(\sum_{i=1}^{n} X_{i}W_{i} + b\right)
 \end{equation}
 
 \section{Multi layer Perceptron}
@@ -25,5 +24,31 @@ then it is a matrix with $j$ in current layer rows and $k$ in previous layer col
 
 $b_{j}^{l}$ is bias for layer $l$ at index $j$ in layer $l$.
 
+\subsection{Feed-forward}
+\begin{align}
+  c &= (a^{1} - a^{0})^{2}
+\end{align}
 
+\subsection{Feed-forward}
+
+\begin{align}
+  a^{1} &= \sigma(w^{1}a^{0} + b^{1}) \\
+  z^{1} &= w^{1}a^{0} + b^{1} \\
+  a^{1} &= \sigma(z)
+\end{align}
+
+\subsection{Back propogation}
+\begin{align}
+  \frac{d({\sigma(x))}}{dx} &= (\sigma(x))(1 - \sigma(x)) \\
+  \frac{\partial{c}}{\partial{w^{1}}} &= \frac{\partial{c}}{\partial{a^{1}}} \frac{\partial{a^{1}}}{\partial{z^{1}}} \frac{\partial{z^{1}}}{\partial{w^{1}}} \\
+  \frac{\partial{c}}{\partial{w^{1}}} &= 2 * (a^{1} - a^{0}) * (a^{1}) * (1-a^{1}) * a^{0}
+\end{align}
+\begin{align}
+  \frac{\partial{c}}{\partial{b^{1}}} &= \frac{\partial{c}}{\partial{a^{1}}} \frac{\partial{a^{1}}}{\partial{z^{1}}} \frac{\partial{z^{1}}}{\partial{b^{1}}} \\
+  \frac{\partial{c}}{\partial{b^{1}}} &= 2 * (a^{1} - a^{0}) * (a^{1}) * (1-a^{1}) * 1
+\end{align}
+\begin{align}
+  \frac{\partial{c}}{\partial{a^{0}}} &= \frac{\partial{c}}{\partial{a^{1}}} \frac{\partial{a^{1}}}{\partial{z^{1}}} \frac{\partial{z^{1}}}{\partial{a^{0}}} \\
+  \frac{\partial{c}}{\partial{a^{0}}} &= 2 * (a^{1} - a^{0}) * (a^{1}) * (1-a^{1}) * w^{1}
+\end{align}
 \end{document}
